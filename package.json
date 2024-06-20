@@ -2,17 +2,19 @@
   "name": "mendix-sdk-files",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dojofinder.js",
   "scripts": {
     "build": "tsc ",
-    "script": "node ./build/index.js",
-    "buildandrun": "tsc && node ./build/index.js"
+    "script": "node ./build/dojofinder.js",
+    "clean": "rmdir /s /q \"./build\"",
+    "buildandrun": "tsc && node ./build/dojofinder.js",
+    "versions": "tsc && node ./build/moduleversions.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "mendixmodelsdk": "^4.78.0",
+    "mendixmodelsdk": "^4.84.0",
     "mendixplatformsdk": "^5.1.2"
   }
 }
