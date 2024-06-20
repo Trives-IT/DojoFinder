@@ -8,7 +8,9 @@
     "script": "node ./build/dojofinder.js",
     "clean": "rmdir /s /q \"./build\"",
     "buildandrun": "tsc && node ./build/dojofinder.js",
-    "versions": "tsc && node ./build/moduleversions.js"
+    "versions": "tsc && node ./build/moduleversions.js",
+    "documents": "tsc && node ./build/documentlist.js",
+    "serializer": "tsc && node ./build/serializer.js"
   },
   "keywords": [],
   "author": "",
