@@ -2,8 +2,8 @@ import { MendixPlatformClient, setPlatformConfig } from "mendixplatformsdk";
 import * as fs from "fs";
 import { JavaScriptSerializer, pages } from "mendixmodelsdk";
 
-const config = require("../config/config.json");
-const apps = require("../config/apps.json");
+const config = require("../../config/config.json");
+const apps = require("../../config/apps.json");
 
 let mxClient: MendixPlatformClient;
 
@@ -14,7 +14,6 @@ async function main() {
   setPlatformConfig({ mendixToken: config.mendixtoken });
   mxClient = new MendixPlatformClient();
   const app = apps[0];
-  // Iterate over your list of projects:
 
   // Open the project:
   console.log(`Opening project: ${app.name} with id: ${app.id} and branch: ${app.branch}`);
@@ -25,12 +24,11 @@ async function main() {
   const mxModel = await mxWorkingCopy.openModel();
   const mxDocuments = mxModel.allDocuments();
 
-  const allDocuments: { documentName: string; documentType: string }[] = [];
+  // Get the pages:
+  const accountEditPage = await mxDocuments.find((document) => document.name === "Account_Edit")?.load()!;
+  const pageWithWidgets = await mxDocuments.find((document) => document.name === "ThisPageHasADojoWidget")?.load()!;
 
-  for (const mxDocument of mxDocuments) {
-    allDocuments.push({ documentName: mxDocument.name, documentType: mxDocument.structureTypeName });
-  }
-
-  // Write the output to a file:
-  fs.writeFileSync(`output/documentlist.json`, JSON.stringify(allDocuments));
+  // Write the serialized pages to a file:
+  fs.writeFileSync(`output/_serializedPages/accountEditPage.json`, JavaScriptSerializer.serializeToJs(accountEditPage));
+  fs.writeFileSync(`output/_serializedPages/widgetsPage.json`, JavaScriptSerializer.serializeToJs(pageWithWidgets));
 }

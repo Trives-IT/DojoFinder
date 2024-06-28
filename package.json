@@ -1,5 +1,5 @@
 {
-  "name": "mendix-sdk-files",
+  "name": "dojofinder",
   "version": "1.0.0",
   "description": "",
   "main": "dojofinder.js",
@@ -8,9 +8,8 @@
     "script": "node ./build/dojofinder.js",
     "clean": "rmdir /s /q \"./build\"",
     "dojofinder": "tsc && node ./build/dojofinder.js",
-    "versions": "tsc && node ./build/moduleversions.js",
-    "documents": "tsc && node ./build/documentlist.js",
-    "serializer": "tsc && node ./build/serializer.js"
+    "documents": "tsc && node ./build/_helpers/documentlist.js",
+    "serializer": "tsc && node ./build/_helpers/serializer.js"
   },
   "keywords": [],
   "author": "",

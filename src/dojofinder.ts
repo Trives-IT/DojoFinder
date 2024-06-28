@@ -45,7 +45,8 @@ async function main() {
           // If there is a match, add the document to the list
           for (const match of referenceMatch) {
             const output = match[0];
-            let widgetName = output.substring(output.indexOf("name = ") + 8).slice(0, -2); // TODOWS: Deze moet nog aangescherpt voor de DoJo Widgets
+            if (output.includes("pluginWidget = true")) continue; // Skip any plugin widgets
+            let widgetName = output.substring(output.indexOf("name = ") + 8).slice(0, -2);
             if (widgetName.includes('"')) widgetName = widgetName.substring(0, widgetName.indexOf('"'));
             documentsWithDojoWidgets.push({ documentType: document.structureTypeName, documentName: document.qualifiedName!, widgetType: regex.objectType, widgetName: widgetName });
           }
