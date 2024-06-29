@@ -6,50 +6,49 @@ const config = require("../config/config.json");
 const apps = require("../config/apps.json");
 const regexes = require("../config/regexes.json");
 
-let mxClient: MendixPlatformClient;
-
 main().catch(console.error);
 
 async function main() {
-  // Set up your Mendix Model SDK client:
+  // 1. Set up your Mendix Model SDK client with your Mendix PAT:
   setPlatformConfig({ mendixToken: config.mendixtoken });
-  mxClient = new MendixPlatformClient();
+  const mxClient = new MendixPlatformClient();
 
   const regexList = transformList(regexes);
 
   // Iterate over your list of projects:
   for (const app of apps) {
-    // Open the project:
+    // 2. Load the project:
     console.log(`Opening project: ${app.name} with id: ${app.id} and branch: ${app.branch}`);
-    const mxApp = mxClient.getApp(app.id);
+    const myMendixApp = mxClient.getApp(app.id);
+    const mxWorkingCopy = await myMendixApp.createTemporaryWorkingCopy(app.branch);
+    const myMendixModel = await mxWorkingCopy.openModel();
 
-    // Create a working copy and open the model:
-    const mxWorkingCopy = await mxApp.createTemporaryWorkingCopy(app.branch);
-    const mxModel = await mxWorkingCopy.openModel();
+    // 3. Get all documents in the project that are pages, layouts or snippets:
+    const documents = myMendixModel.allDocuments().filter((document) => document instanceof pages.Page || document instanceof pages.Layout || document instanceof pages.Snippet);
 
-    // Get all documents:
-    const documents = mxModel.allDocuments();
-
-    // Create a list of documents that contain a reference to a Dojo widget
+    // Create a (empty) list of documents that contain a reference to a pluggable widget
     let documentsWithDojoWidgets: { documentType: string; documentName: string; widgetType: string; widgetName: string }[] = [];
 
     for (const document of documents) {
-      // Widgets are only on pages, layouts and snippets
-      if (document instanceof pages.Page || document instanceof pages.Layout || document instanceof pages.Snippet) {
-        const loadedDocument = await document.load();
-        const jsOutput = JavaScriptSerializer.serializeToJs(loadedDocument);
+      // 4. Get JS code that would recreate this document
+      const jsOutput = JavaScriptSerializer.serializeToJs(await document.load());
 
-        // Check the serialized document against all regexes
-        for (const regex of regexList) {
-          const referenceMatch = jsOutput.matchAll(regex.regex);
-          // If there is a match, add the document to the list
-          for (const match of referenceMatch) {
-            const output = match[0];
-            if (output.includes("pluginWidget = true")) continue; // Skip any plugin widgets
-            let widgetName = output.substring(output.indexOf("name = ") + 8).slice(0, -2);
-            if (widgetName.includes('"')) widgetName = widgetName.substring(0, widgetName.indexOf('"'));
-            documentsWithDojoWidgets.push({ documentType: document.structureTypeName, documentName: document.qualifiedName!, widgetType: regex.objectType, widgetName: widgetName });
-          }
+      // 5. Check the serialized document against all regexes
+      for (const regex of regexList) {
+        const referenceMatch = jsOutput.matchAll(regex.regex);
+        // 6. If there is a match, add the document to the list
+        for (const match of referenceMatch) {
+          const output = match[0];
+
+          // Skip any plugin widgets:
+          if (output.includes("pluginWidget = true")) continue;
+
+          // Some additional parsing to get the widget name:
+          let widgetName = output.substring(output.indexOf("name = ") + 8).slice(0, -2);
+          if (widgetName.includes('"')) widgetName = widgetName.substring(0, widgetName.indexOf('"'));
+
+          // Add the document to the list:
+          documentsWithDojoWidgets.push({ documentType: document.structureTypeName, documentName: document.qualifiedName!, widgetType: regex.objectType, widgetName: widgetName });
         }
       }
     }

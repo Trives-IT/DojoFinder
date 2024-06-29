@@ -29,6 +29,6 @@ async function main() {
   const pageWithWidgets = await mxDocuments.find((document) => document.name === "ThisPageHasADojoWidget")?.load()!;
 
   // Write the serialized pages to a file:
-  fs.writeFileSync(`output/_serializedPages/accountEditPage.json`, JavaScriptSerializer.serializeToJs(accountEditPage));
-  fs.writeFileSync(`output/_serializedPages/widgetsPage.json`, JavaScriptSerializer.serializeToJs(pageWithWidgets));
+  fs.writeFileSync(`output/_serializedPages/accountEditPage.js`, JavaScriptSerializer.serializeToJs(accountEditPage));
+  fs.writeFileSync(`output/_serializedPages/widgetsPage.js`, JavaScriptSerializer.serializeToJs(pageWithWidgets));
 }
