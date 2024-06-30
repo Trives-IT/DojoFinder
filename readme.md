@@ -1,7 +1,7 @@
 Setup:
 
 1. If you don't have npm or Typescript installed yet, follow the instructions described in section 3 of https://docs.mendix.com/apidocs-mxsdk/mxsdk/setting-up-your-development-environment/#setting. You can ignore the steps before and after.
-2. Either download this project or click on 'Use this template' to immediately create your own repository based on this template.
+2. Download or clone this project from github to a local directory
 3. Create a folder named 'config' in this project's root folder.
 4. Copy the files in the folder 'config_preset' to the config folder
 5. Create a folder named 'output' in this project's root folder.
