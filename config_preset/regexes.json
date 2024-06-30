@@ -1,0 +1,10 @@
+[
+  { "objectType": "Reference Selector", "regex": "var \\w+ = pages\\.ReferenceSelector\\.create\\(model\\);\\n[\\w\\s]+\\.name = \"\\w+\";" },
+  { "objectType": "Reference Set Selector", "regex": "var \\w+ = pages\\.ReferenceSetSelector\\.create\\(model\\);\\n[\\w\\s]+\\.name = \"\\w+\";" },
+  { "objectType": "Input Reference Set Selector", "regex": "var \\w+ = pages\\.InputReferenceSetSelector\\.create\\(model\\);\\n[\\w\\s]+\\.name = \"\\w+\";" },
+  { "objectType": "Data Grid", "regex": "var \\w+ = pages\\.DataGrid\\.create\\(model\\);\\n[\\w\\s]+\\.name = \"\\w+\";" },
+  { "objectType": "Template Grid", "regex": "var \\w+ = pages\\.TemplateGrid\\.create\\(model\\);\\n[\\w\\s]+\\.name = \"\\w+\";" },
+  { "objectType": "Dynamic Image Viewer", "regex": "var \\w+ = pages\\.DynamicImageViewer\\.create\\(model\\);\\n[\\w\\s]+\\.name = \"\\w+\";" },
+  { "objectType": "Static Image", "regex": "var \\w+ = pages\\.StaticImageViewer\\.create\\(model\\);\\n[\\w\\s]+\\.name = \"\\w+\";" },
+  { "objectType": "Custom Widget", "regex": "var \\w+ = customwidgets\\.CustomWidgetType\\.create\\(model\\);\n((.*;.*\n)*)" }
+]
