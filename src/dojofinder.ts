@@ -4,39 +4,49 @@ import { JavaScriptSerializer, pages } from "mendixmodelsdk";
 
 const pat = require("../config/pat.json").token as string;
 const apps = require("../config/apps.json");
-const regexList = transformList(require("../config/regexes.json"));
+
+const regexList: RegexMap[] = [
+  { objectType: "Reference Selector", regex: /var \w+ = pages\.ReferenceSelector\.create\(model\);\n((.*;.*\n)*)/g },
+  { objectType: "Reference Set Selector", regex: /var \w+ = pages\.ReferenceSetSelector\.create\(model\);\n((.*;.*\n)*)/g },
+  { objectType: "Input Reference Set Selector", regex: /var \w+ = pages\.InputReferenceSetSelector\.create\(model\);\n((.*;.*\n)*)/g },
+  { objectType: "Data Grid", regex: /var \w+ = pages\.DataGrid\.create\(model\);\n((.*;.*\n)*)/g },
+  { objectType: "Template Grid", regex: /var \w+ = pages\.TemplateGrid\.create\(model\);\n((.*;.*\n)*)/g },
+  { objectType: "Dynamic Image Viewer", regex: /var \w+ = pages\.DynamicImageViewer\.create\(model\);\n((.*;.*\n)*)/g },
+  { objectType: "Static Image", regex: /var \w+ = pages\.StaticImageViewer\.create\(model\);\n((.*;.*\n)*)/g },
+  { objectType: "Custom Widget", regex: /var \w+ = customwidgets\.CustomWidgetType\.create\(model\);\n((.*;.*\n)*)/g },
+];
 
 main().catch(console.error);
 
 async function main() {
-  // 1. Set up your Mendix Model SDK client with your Mendix PAT:
+  // Prerequisite: Get access to app(s) - this is done by setting the Mendix Platform SDK up with a Personal Access Token (PAT)
   setPlatformConfig({ mendixToken: pat });
   const mxClient = new MendixPlatformClient();
 
   // Iterate over your list of apps:
   for (const app of apps) {
-    // 2. Load the app:
+    // 1. Load a Mendix app:
     console.log(`Opening app ${app.name} with id ${app.id} and branch ${app.branch}`);
     const myMendixApp = mxClient.getApp(app.id);
     const mxWorkingCopy = await myMendixApp.createTemporaryWorkingCopy(app.branch);
     const myMendixModel = await mxWorkingCopy.openModel();
     console.log(`Opened app ${app.name}`);
 
-    // 3. Get all documents in the app that are pages, layouts or snippets:
+    // 2. Get all documents that could contain a (Dojo) widget - pages, layouts and snippets
     const documents = myMendixModel.allDocuments().filter((document) => document instanceof pages.Page || document instanceof pages.Layout || document instanceof pages.Snippet);
     console.log(`Found ${documents.length} documents in app ${app.name}`);
 
-    // Create a (empty) list of documents that contain a reference to a pluggable widget
+    // Create an empty list to store the documents with Dojo widgets
     let documentsWithDojoWidgets: { documentType: string; documentName: string; widgetType: string; widgetName: string }[] = [];
     console.log(`Checking all documents for Dojo widgets in app ${app.name}`);
     for (const document of documents) {
-      // 4. Get JS code that would recreate this document
+      // 3. Get contents of those documents - Get JS code that would recreate this document with SerializeToJs
       const serializedDocument = JavaScriptSerializer.serializeToJs(await document.load());
 
-      // 5. Check the generated document against a list of regular expressions
+      // 4. Find the widgets using patterns - Check the generated document against a list of regular expressions
       for (const regex of regexList) {
         const referenceMatch = serializedDocument.matchAll(regex.regex);
-        // 6. If there is a match, add the document to the list
+        // If there is a match, add the document to the list
         for (const match of referenceMatch) {
           const output = match[0];
 
@@ -55,21 +65,13 @@ async function main() {
 
     console.log(`Found ${documentsWithDojoWidgets.length} outdated widgets in app ${app.name}`);
 
-    // Write the resulting output to a file:
+    // 5. Export results - Write the resulting output to a file:
     fs.writeFileSync(`output/${app.name}.json`, JSON.stringify(documentsWithDojoWidgets));
   }
 }
 
 // Interface for the regexes
-interface RegexMap {
+type RegexMap = {
   objectType: string;
   regex: RegExp;
-}
-
-// Helper function to transform the JSON list to a list of RegexMaps
-function transformList(jsonList: { objectType: string; regex: string }[]): RegexMap[] {
-  return jsonList.map((item) => ({
-    objectType: item.objectType,
-    regex: new RegExp(item.regex, "g"),
-  }));
-}
+};
