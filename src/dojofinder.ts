@@ -34,7 +34,7 @@ async function main() {
 
     // 2. Get all documents that could contain a (Dojo) widget - pages, layouts and snippets
     const documents = myMendixModel.allDocuments().filter((document) => document instanceof pages.Page || document instanceof pages.Layout || document instanceof pages.Snippet);
-    console.log(`Found ${documents.length} documents in app ${app.name}`);
+    console.log(`Found ${documents.length} pages, layouts or snippets in app ${app.name}`);
 
     // Create an empty list to store the documents with Dojo widgets
     let documentsWithDojoWidgets: { documentType: string; documentName: string; widgetType: string; widgetName: string }[] = [];
