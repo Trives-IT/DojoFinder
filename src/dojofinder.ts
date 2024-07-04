@@ -6,14 +6,14 @@ const pat = require("../config/pat.json").token as string;
 const apps = require("../config/apps.json");
 
 const regexList: RegexMap[] = [
-  { objectType: "Reference Selector", regex: /var \w+ = pages\.ReferenceSelector\.create\(model\);\n((.*;.*\n)*)/g },
-  { objectType: "Reference Set Selector", regex: /var \w+ = pages\.ReferenceSetSelector\.create\(model\);\n((.*;.*\n)*)/g },
-  { objectType: "Input Reference Set Selector", regex: /var \w+ = pages\.InputReferenceSetSelector\.create\(model\);\n((.*;.*\n)*)/g },
-  { objectType: "Data Grid", regex: /var \w+ = pages\.DataGrid\.create\(model\);\n((.*;.*\n)*)/g },
-  { objectType: "Template Grid", regex: /var \w+ = pages\.TemplateGrid\.create\(model\);\n((.*;.*\n)*)/g },
-  { objectType: "Dynamic Image Viewer", regex: /var \w+ = pages\.DynamicImageViewer\.create\(model\);\n((.*;.*\n)*)/g },
-  { objectType: "Static Image", regex: /var \w+ = pages\.StaticImageViewer\.create\(model\);\n((.*;.*\n)*)/g },
-  { objectType: "Custom Widget", regex: /var \w+ = customwidgets\.CustomWidgetType\.create\(model\);\n((.*;.*\n)*)/g },
+  { widgetType: "Reference Selector", regex: /var \w+ = pages\.ReferenceSelector\.create\(model\);\n((.*;.*\n)*)/g },
+  { widgetType: "Reference Set Selector", regex: /var \w+ = pages\.ReferenceSetSelector\.create\(model\);\n((.*;.*\n)*)/g },
+  { widgetType: "Input Reference Set Selector", regex: /var \w+ = pages\.InputReferenceSetSelector\.create\(model\);\n((.*;.*\n)*)/g },
+  { widgetType: "Data Grid", regex: /var \w+ = pages\.DataGrid\.create\(model\);\n((.*;.*\n)*)/g },
+  { widgetType: "Template Grid", regex: /var \w+ = pages\.TemplateGrid\.create\(model\);\n((.*;.*\n)*)/g },
+  { widgetType: "Dynamic Image Viewer", regex: /var \w+ = pages\.DynamicImageViewer\.create\(model\);\n((.*;.*\n)*)/g },
+  { widgetType: "Static Image", regex: /var \w+ = pages\.StaticImageViewer\.create\(model\);\n((.*;.*\n)*)/g },
+  { widgetType: "Custom Widget", regex: /var \w+ = customwidgets\.CustomWidgetType\.create\(model\);\n((.*;.*\n)*)/g },
 ];
 
 main().catch(console.error);
@@ -58,7 +58,7 @@ async function main() {
           if (widgetName.includes('"')) widgetName = widgetName.substring(0, widgetName.indexOf('"'));
 
           // Add the document to the list:
-          documentsWithDojoWidgets.push({ documentType: document.structureTypeName, documentName: document.qualifiedName!, widgetType: regex.objectType, widgetName: widgetName });
+          documentsWithDojoWidgets.push({ documentType: document.structureTypeName, documentName: document.qualifiedName!, widgetType: regex.widgetType, widgetName: widgetName });
         }
       }
     }
@@ -72,6 +72,6 @@ async function main() {
 
 // Interface for the regexes
 type RegexMap = {
-  objectType: string;
+  widgetType: string;
   regex: RegExp;
 };
